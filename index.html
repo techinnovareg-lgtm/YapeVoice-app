@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Instalación - YapeVoice Notifier</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Plus+Jakarta+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070913;
+      --panel-bg: rgba(15, 22, 42, 0.65);
+      --panel-border: rgba(99, 102, 241, 0.25);
+      --accent-cyan: #06b6d4;
+      --accent-purple: #8b5cf6;
+      --accent-gold: #f59e0b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #020205;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Contenedor vertical 9:16 similar a pantalla de celular */
+    .phone-container {
+      width: 100%;
+      max-width: 410px;
+      height: 100vh;
+      max-height: 820px;
+      position: relative;
+      background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.15), transparent),
+                  radial-gradient(circle at bottom left, rgba(6, 182, 212, 0.1), transparent),
+                  var(--bg-dark);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Cuadrícula tecnológica de fondo */
+    .tech-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(99, 102, 241, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(99, 102, 241, 0.04) 1px, transparent 1px);
+      background-size: 20px 20px;
+      pointer-events: none;
+    }
+
+    /* Cabecera común */
+    .header {
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 10;
+      background: linear-gradient(to bottom, rgba(7, 9, 19, 0.8), transparent);
+    }
+
+    .app-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      object-fit: cover;
+      border: 2px solid var(--accent-cyan);
+      box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
+    }
+
+    .app-info h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      background: linear-gradient(135deg, #fff 40%, var(--accent-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .app-info p {
+      font-size: 11px;
+      color: var(--accent-gold);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Área de las diapositivas */
+    .slides-wrapper {
+      flex: 1;
+      position: relative;
+    }
+
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.95);
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: scale(1);
+    }
+
+    .slide-number {
+      font-family: 'Outfit', sans-serif;
+      font-size: 56px;
+      font-weight: 800;
+      color: rgba(255, 255, 255, 0.05);
+      position: absolute;
+      top: 20px;
+      right: 24px;
+      line-height: 1;
+    }
+
+    .slide-title-badge {
+      align-self: flex-start;
+      padding: 6px 12px;
+      border-radius: 30px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid var(--panel-border);
+      color: #a5b4fc;
+      margin-bottom: 20px;
+    }
+
+    .slide h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      margin-bottom: 18px;
+      line-height: 1.25;
+      background: linear-gradient(135deg, #ffffff, #cbd5e1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Caja de contenido o simulación de captura de ajustes */
+    .content-box {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 16px;
+      padding: 20px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Indicador tipo luces de neón */
+    .content-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(to bottom, var(--accent-cyan), var(--accent-purple));
+    }
+
+    .step-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .step-list li {
+      display: flex;
+      gap: 12px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .step-number {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 20px;
+      height: 20px;
+      background: rgba(6, 182, 212, 0.2);
+      border: 1px solid var(--accent-cyan);
+      color: var(--accent-cyan);
+      font-weight: 700;
+      font-size: 11px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .step-text strong {
+      color: #fff;
+    }
+
+    .highlight-yellow {
+      color: var(--accent-gold);
+      font-weight: 600;
+    }
+
+    .voiceover-box {
+      background: rgba(245, 158, 11, 0.05);
+      border: 1px dashed rgba(245, 158, 11, 0.2);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: #fde047;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    /* Controles de navegación de la presentación */
+    .nav-bar {
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(to top, rgba(7, 9, 19, 0.9), transparent);
+      z-index: 10;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: #fff;
+    }
+
+    .slide-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.25);
+      transition: all 0.3s;
+    }
+
+    .dot.active {
+      width: 18px;
+      border-radius: 10px;
+      background: var(--accent-cyan);
+      box-shadow: 0 0 10px var(--accent-cyan);
+    }
+
+    /* Simulación UI Ajustes de Android */
+    .mock-settings-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 12px;
+    }
+    .mock-settings-row:last-child {
+      border-bottom: none;
+    }
+    .mock-settings-row span {
+      font-weight: 500;
+    }
+    .switch {
+      width: 34px;
+      height: 20px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .switch::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #fff;
+      transition: transform 0.3s;
+    }
+    .switch.on {
+      background: #10b981;
+    }
+    .switch.on::after {
+      transform: translateX(14px);
+    }
+    .switch.off {
+      background: #ef4444;
+    }
+
+    .three-dots-btn {
+      padding: 4px 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      font-weight: 900;
+      font-size: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* Ajustes extras */
+    .branding-footer {
+      text-align: center;
+      padding-bottom: 12px;
+      font-size: 10px;
+      color: var(--text-muted);
+      z-index: 10;
+    }
+    .branding-footer strong {
+      color: var(--accent-cyan);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="phone-container">
+    <div class="tech-grid"></div>
+
+    <!-- Header Fijo -->
+    <div class="header">
+      <img src="app_icon_fixed_custom.png" alt="YapeVoice Notifier" class="app-icon" onerror="this.src='https://placehold.co/100x100/06b6d4/ffffff?text=YapeVoice'">
+      <div class="app-info">
+        <h1>YapeVoice Notifier</h1>
+        <p>Cobros 100% Manos Libres</p>
+      </div>
+    </div>
+
+    <!-- Wrapper de Diapositivas -->
+    <div class="slides-wrapper">
+      
+      <!-- SLIDE 1 -->
+      <div class="slide active">
+        <div class="slide-number">01</div>
+        <div class="slide-title-badge">Paso 1: Acceso</div>
+        <h2>Descarga Segura</h2>
+        <div class="content-box">
+          <div style="text-align: center; margin: 10px 0;">
+            <div style="width: 140px; height: 140px; border: 4px solid var(--accent-cyan); margin: 0 auto; display: flex; justify-content: center; align-items: center; border-radius: 16px; background: rgba(6,182,212,0.1); box-shadow: 0 0 20px rgba(6,182,212,0.2); overflow: hidden;">
+              <img src="QR_YapeVoiceNotifier.png" alt="QR Descarga" style="width: 100%; height: 100%; object-fit: cover; background: #fff;">
+            </div>
+            <p style="margin-top: 15px; font-size: 13px; color: var(--text-muted);">Escanea el código o toca el botón:</p>
+            <a href="https://github.com/techinnovareg-lgtm/YapeVoice-app/releases/download/v1.0.0/app-release.apk" target="_blank" style="display:inline-block; margin-top:10px; padding:10px 20px; background:var(--accent-cyan); color:#000; text-decoration:none; border-radius:20px; font-weight:bold; font-size:13px; box-shadow: 0 0 10px rgba(6,182,212,0.4);">📥 Descargar Instalador Oficial</a>
+          </div>
+        </div>
+        <div class="voiceover-box">
+          <span>🎙️</span>
+          <p><strong>Locutor:</strong> ¡Hola! Instala YapeVoice Notifier en 14 simples pasos. Primero, escanea el QR o toca el botón de descarga oficial.</p>
+        </div>
+      </div>
+
+      <!-- SLIDE 2 -->
+      <div class="slide">
+        <div class="slide-number">02</div>
+        <div class="slide-title-badge">Paso 2: Descarga</div>
+        <h2>Descarga el Archivo APK</h2>
+        <div class="content-box">
+          <div style="padding: 10px 0;">
+            <p style="font-size: 13px; margin-bottom: 12px;">Busca el archivo:</p>
+            <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); font-family: monospace; font-size: 12px; color: var(--accent-cyan); margin-bottom: 12px;">
+              📁 app-release.apk
+            </div>
+            <p style="font-size: 11px; color: var(--accent-gold); font-style: italic;">💡 Si Android te pregunta "¿Quieres descargar?", selecciona "Descargar de todos modos".</p>
+          </div>
+        </div>
+        <div class="voiceover-box">
+          <span>🎙️</span>
+          <p><strong>Locutor:</strong> Paso dos: Elige descargar y selecciona el archivo APK de forma segura.</p>
+        </div>
+      </div>
+
+      <!-- SLIDE 3 -->
+      <div class="slide">
+        <div class="slide-number">03</div>
+        <div class="slide-title-badge">Paso 3: Play Protect</div>
+        <h2>Pausar Play Protect</h2>
+        <div class="content-box">
+          <ul class="step-list">
+            <li>
+              <div class="step-number">1</div>
+              <div class="step-text">Abre <strong>Play Store</strong> y toca tu <strong>Foto de Perfil</strong>.</div>
+            </li>
+            <li>
+              <div class="step-number">2</div>
+              <div class="step-text">Entra en <strong>Play Protect</strong>.</div>
+            </li>
+            <li>
+              <div class="step-number">3</div>
+              <div class="step-text">Toca el <strong>Engranaje (Ajustes)</strong> arriba a la derecha.</div>
+            </li>
+            <li>
+              <div class="step-number">4</div>
+              <div class="step-text">Desactiva <span class="highlight-yellow">"Analizar apps con Play Protect"</span>.</div>
+            </li>
+          </ul>
+        </div>
+        <div class="voiceover-box">
+          <span>🎙️</span>
+          <p><strong>Locutor:</strong> Paso tres: Ve a Play Store, entra a Play Protect, presiona el engranaje y apaga el análisis.</p>
+        </div>
+      </div>
+
+      <!-- SLIDE 4 -->
+      <div class="slide">
+        <div class="slide-number">04</div>
+        <div class="slide-title-badge">Paso 4: Archivos</div>
+        <h2>Ubica en Descargas</h2>
+        <div class="content-box">
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <p style="font-size: 13px;">Abre tu gestor de archivos e ingresa a:</p>
+            <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); font-size: 13px;">
+              📁 Almacenamiento Interno > <strong>Descargas</strong>
+            </div>
+            <p style="font-size: 12px; color: var(--text-muted);">Verás el archivo <strong style="color: #fff;">app-release.apk</strong> listo.</p>
+          </div>
+        </div>
+        <div class="voiceover-box">
+          <span>🎙️</span>
+          <p><strong>Locutor:</strong> Paso cuatro: Abre tu carpeta de descargas para encontrar el instalador APK.</p>
+        </div>
+      </div>
+
+      <!-- SLIDE 5 -->
+      <div class="slide">
+        <div class="slide-number">05</div>
+        <div class="slide-title-badge">Paso 5: Instalación</div>
+        <h2>Instalar la Aplicación</h2>
+        <div class="content-box">
+          <div style="text-align: center; padding: 20px 0;">
+            <p style="font-size: 14px; margin-bottom: 20px;">Presiona el archivo APK y luego dale al botón:</p>
+            <button style="background: var(--accent-cyan); border: none; color: #000; padding: 12px 30px; border-radius: 30px; font-weight: 700; font-size: 14px; box-shadow: 0 0 15px rgba(6,182,212,0.4);">
+              📥 INSTALAR
+            </button>
+          </div>
+        </div>
+        <div class="voiceover-box">
+          <span>🎙️</span>
+          <p><strong>Locutor:</strong> Paso cinco: Toca el archivo descargado y presiona el botón Instalar para iniciar.</p>
+        </div>
+      </div>
+
+      <!-- SLIDE 6 -->
+      <div class="slide">
+        <div class="slide-number">06</div>
+        <div class="slide-title-badge">Paso 6: Orígenes</div>
+        <h2>Orígenes Desconocidos</h2>
+        <div class="content-box">
+          <div style="font-size: 13px; line-height: 1.5; display: flex; flex-direction: column; gap: 10px;">
+            <p>Si Android te muestra una advertencia de seguridad:</p>
+            <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); padding: 12px; border-radius: 8px; color: #fca5a5;">
+              ⚠️ "Por seguridad tu teléfono no puede instalar apps desconocidas de esta fuente."
+            </div>
+            <p>Pulsa <strong style="color: #fff;">Configuración</strong> y activa <span class="highlight-yellow">"Permitir desde esta fuente"</span>.</p>
+          </div>
+        </div>
+        <div class="voiceover-box">
+          <span>🎙️</span>
+          <p><strong>Locutor:</strong> Paso seis: Si te lo solicita, activa "Permitir desde esta fuente" en los ajustes.</p>
+        </div>
+      </div>
+
+      <!-- SLIDE 7 -->
+      <div class="slide">
+        <div class="slide-number">07</div>
+        <div class="slide-title-badge">Paso 7: Seguridad</div>
+        <h2>Ajustes Restringidos</h2>
+        <div class="content-box">
+          <p style="font-size: 11px; color: var(--accent-cyan); text-transform: uppercase; font-weight: 700; margin-bottom: 8px;">Obligatorio en Android 13+</p>
+          <ul class="step-list">
+            <li>
+              <div class="step-number">1</div>
+              <div class="step-text">Ve a <strong>Ajustes > Aplicaciones > YapeVoice Notifier</strong>.</div>
+            </li>
+            <li>
+              <div class="step-number">2</div>
+              <div class="step-text">Toca los <strong>3 puntos <span class="three-dots-btn">︙</span></strong> arriba a la derecha.</div>
+            </li>
+            <li>
+              <div class="step-number">3</div>
+              <div class="step-text">Elige <span class="highlight-yellow">"Permitir ajustes restringidos"</span> y confirma.</div>
+            </li>
+          </ul>
+        </div>
+        <div class="voiceover-box">
+          <span>🎙️</span>
+          <p><strong>Locutor:</strong> Paso siete: En Ajustes de la App, toca los tres puntos y activa Ajustes Restringidos.</p>
+        </div>
+      </div>
+
+      <!-- SLIDE 8 -->
+      <div class="slide">
+        <div class="slide-number">08</div>
+        <div class="slide-title-badge">Paso 8: Notificaciones</div>
+        <h2>Acceso a Notificaciones</h2>
+        <div class="content-box">
+          <div style="font-size: 13px; display: flex; flex-direction: column; gap: 10px;">
+            <p>1. Abre **YapeVoice Notifier** y presiona **Activar** en la alerta.</p>
+            <p>2. En la lista de tu celular, busca **YapeVoice Notifier**.</p>
+            <div class="mock-settings-row">
+              <span>YapeVoice Notifier</span>
+              <div class="switch on"></div>
+            </div>
+            <p style="font-size: 11px; color: var(--text-muted);">Activa el interruptor y dale a **Permitir**.</p>
+          </div>
+        </div>
+        <div class="voiceover-box">
+          <span>🎙️</span>
+          <p><strong>Locutor:</strong> Paso ocho: Abre la aplicación, activa el acceso a notificaciones e interruptor de la lista.</p>
+        </div>
+      </div>
+
+      <!-- SLIDE 9 -->
+      <div class="slide">
+        <div class="slide-number">09</div>
+        <div class="slide-title-badge">Paso 9: Batería</div>
+        <h2>Optimización de Batería</h2>
+        <div class="content-box">
+          <div style="font-size: 13px; display: flex; flex-direction: column; gap: 10px;">
+            <p>Evita que Android cierre la app para ahorrar energía:</p>
+            <ul class="step-list">
+              <li>
+                <div class="step-number">💡</div>
+                <div class="step-text">Entra a Ajustes > Aplicaciones > <strong>YapeVoice Notifier</strong>.</div>
+              </li>
+              <li>
+                <div class="step-number">⚡</div>
+                <div class="step-text">Toca en <strong>Batería</strong> y selecciona <span class="highlight-yellow">"Sin Restricciones"</span> o <span class="highlight-yellow">"No optimizar"</span>.</div>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="voiceover-box">
+          <span>🎙️</span>
+          <p><strong>Locutor:</strong> Paso nueve: Pon la optimización de batería de la app en 'Sin Restricciones' para que no se apague sola.</p>
+        </div>
+      </div>
+
+      <!-- SLIDE 10 -->
+      <div class="slide">
+        <div class="slide-number">10</div>
+        <div class="slide-title-badge">Paso 10: Sonido</div>
+        <h2>Subir el Volumen</h2>
+        <div class="content-box">
+          <div style="text-align: center; padding: 15px 0;">
+            <div style="font-size: 50px; margin-bottom: 12px;">🔊</div>
+            <p style="font-size: 14px; font-weight: 600; margin-bottom: 8px;">Sube el volumen multimedia</p>
+            <p style="font-size: 12px; color: var(--text-muted);">Asegúrate de no tener el celular en modo silencio o vibración.</p>
+          </div>
+        </div>
+        <div class="voiceover-box">
+          <span>🎙️</span>
+          <p><strong>Locutor:</strong> Paso diez: Sube el volumen de tu teléfono y desactiva el modo de vibración.</p>
+        </div>
+      </div>
+
+      <!-- SLIDE 11 -->
+      <div class="slide">
+        <div class="slide-number">11</div>
+        <div class="slide-title-badge">Paso 11: Calibración</div>
+        <h2>Probar Tono y Volumen</h2>
+        <div class="content-box">
+          <div style="font-size: 13px; display: flex; flex-direction: column; gap: 8px;">
+            <p>Abre el menú de ajustes internos de la app:</p>
+            <div style="background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08);">
+              <div class="mock-settings-row">
+                <span>Velocidad de Voz</span>
+                <span style="color: var(--accent-cyan);">Normal (1.0x)</span>
+              </div>
+              <div class="mock-settings-row">
+                <span>Tono de Voz</span>
+                <span style="color: var(--accent-cyan);">Predeterminado</span>
+              </div>
+            </div>
+            <p>Usa el botón <strong style="color: var(--accent-gold);">"Probar Voz"</strong> para calibrar a tu gusto.</p>
+          </div>
+        </div>
+        <div class="voiceover-box">
+          <span>🎙️</span>
+          <p><strong>Locutor:</strong> Paso once: Entra a los ajustes de la app para personalizar la voz y probar el sonido.</p>
+        </div>
+      </div>
+
+      <!-- SLIDE 12 -->
+      <div class="slide">
+        <div class="slide-number">12</div>
+        <div class="slide-title-badge">Paso 12: Premium</div>
+        <h2>Activar Plan Premium</h2>
+        <div class="content-box">
+          <div style="text-align: center; margin-bottom: 15px;">
+            <img src="QR_Pago.jpeg" alt="QR de Pago" style="width: 100px; border-radius: 8px; border: 2px solid var(--accent-gold); box-shadow: 0 0 15px rgba(245, 158, 11, 0.3);">
+          </div>
+          <ul class="step-list">
+            <li>
+              <div class="step-number">💳</div>
+              <div class="step-text">Escanea el QR y realiza el pago de tu plan (S/4.99 mensual o S/40 anual).</div>
+            </li>
+            <li>
+              <div class="step-number">💬</div>
+              <div class="step-text">Envíanos la captura del yape por WhatsApp.</div>
+            </li>
+            <li>
+              <div class="step-number">🔑</div>
+              <div class="step-text">Ingresa en la app el <strong>PIN de 6 dígitos</strong> que te daremos.</div>
+            </li>
+          </ul>
+        </div>
+        <div class="voiceover-box">
+          <span>🎙️</span>
+          <p><strong>Locutor:</strong> Paso doce: Escanea el QR para pagar, envíanos la captura, y activa tu acceso con el PIN.</p>
+        </div>
+      </div>
+
+      <!-- SLIDE 13 -->
+      <div class="slide">
+        <div class="slide-number">13</div>
+        <div class="slide-title-badge">Paso 13: Activo</div>
+        <h2>¡Listo para Cobrar!</h2>
+        <div class="content-box" style="text-align: center; border-color: #10b981; background: rgba(16,185,129,0.05);">
+          <div style="font-size: 55px; color: #10b981; margin-bottom: 12px; text-shadow: 0 0 15px rgba(16,185,129,0.4);">✓</div>
+          <h3 style="font-size: 18px; margin-bottom: 8px;">Servicio de Lectura Activo</h3>
+          <p style="font-size: 12px; color: var(--text-muted);">Tus yapes se leerán en voz alta automáticamente en tiempo real.</p>
+        </div>
+        <div class="voiceover-box">
+          <span>🎙️</span>
+          <p><strong>Locutor:</strong> ¡Y listo! La app leerá tus yapes en voz alta sin tocar tu celular. ¡Muchos éxitos!</p>
+        </div>
+      </div>
+
+      <!-- SLIDE 14 -->
+      <div class="slide">
+        <div class="slide-number">14</div>
+        <div class="slide-title-badge">Paso 14: Contacto</div>
+        <h2>Soporte Técnico</h2>
+        <div class="content-box" style="text-align: center;">
+          <div style="font-size: 45px; margin-bottom: 15px;">👨‍💻</div>
+          <h3 style="font-size: 16px; margin-bottom: 8px;">¿Necesitas ayuda?</h3>
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Si tienes problemas con la instalación, la configuración del PIN o tu licencia, contáctanos.</p>
+          <a href="https://wa.me/51947515529" target="_blank" style="display:inline-block; padding:12px 24px; background:#25D366; color:#fff; text-decoration:none; border-radius:25px; font-weight:bold; font-size:14px; box-shadow: 0 5px 15px rgba(37,211,102,0.4);">💬 Escríbenos al WhatsApp</a>
+        </div>
+        <div class="voiceover-box">
+          <span>🎙️</span>
+          <p><strong>Locutor:</strong> Si tienes alguna duda, no dudes en darle clic al botón para contactarnos por WhatsApp. ¡Estamos para servirte!</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Barra de Navegación -->
+    <div class="nav-bar">
+      <button class="nav-btn" id="prev-btn">Atrás</button>
+      <div class="slide-dots" id="dots-container"></div>
+      <button class="nav-btn" id="next-btn">Siguiente</button>
+    </div>
+
+    <!-- Info del Desarrollador -->
+    <div class="branding-footer">
+      Desarrollado por <strong>Tech Innova</strong> | Soporte: +51 947 515 529
+    </div>
+  </div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const dotsContainer = document.getElementById('dots-container');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    let currentSlide = 0;
+
+    // Crear puntos indicadores
+    slides.forEach((_, index) => {
+      const dot = document.createElement('div');
+      dot.classList.add('dot');
+      if (index === 0) dot.classList.add('active');
+      dotsContainer.appendChild(dot);
+    });
+
+    const dots = document.querySelectorAll('.dot');
+
+    function updateSlides() {
+      slides.forEach((slide, index) => {
+        if (index === currentSlide) {
+          slide.classList.add('active');
+        } else {
+          slide.classList.remove('active');
+        }
+      });
+
+      dots.forEach((dot, index) => {
+        if (index === currentSlide) {
+          dot.classList.add('active');
+        } else {
+          dot.classList.remove('active');
+        }
+      });
+
+      // Habilitar/Deshabilitar botones en extremos
+      prevBtn.style.opacity = currentSlide === 0 ? '0.3' : '1';
+      prevBtn.disabled = currentSlide === 0;
+      nextBtn.innerText = currentSlide === slides.length - 1 ? 'Reiniciar' : 'Siguiente';
+    }
+
+    prevBtn.addEventListener('click', () => {
+      if (currentSlide > 0) {
+        currentSlide--;
+        updateSlides();
+      }
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (currentSlide < slides.length - 1) {
+        currentSlide++;
+      } else {
+        currentSlide = 0; // Volver al inicio al presionar en la última diapositiva
+      }
+      updateSlides();
+    });
+
+    // Control por teclado
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        if (currentSlide < slides.length - 1) {
+          currentSlide++;
+        } else {
+          currentSlide = 0;
+        }
+        updateSlides();
+      } else if (e.key === 'ArrowLeft') {
+        if (currentSlide > 0) {
+          currentSlide--;
+          updateSlides();
+        }
+      }
+    });
+
+    // Inicialización de botones
+    updateSlides();
+  </script>
+</body>
+</html>
